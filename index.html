@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DailyMate — AI Fitness Plans</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,0.08);
+      --panel-strong: rgba(255,255,255,0.12);
+      --text: #eef2ff;
+      --muted: #b6c0ff;
+      --accent: #7c3aed;
+      --accent-2: #06b6d4;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,0.35), transparent 35%),
+        radial-gradient(circle at top right, rgba(6,182,212,0.25), transparent 30%),
+        linear-gradient(180deg, #0b1020 0%, #0a0f1a 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(10, 15, 26, 0.65);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      gap: 16px;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .button {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .button-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 40px rgba(124,58,237,0.35);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .hero { padding: 72px 0 32px; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-card,
+    .glass,
+    .tip-card,
+    .testimonial,
+    .ai-card,
+    .email-card,
+    .support-card,
+    .meal-card {
+      background: var(--panel);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero-copy { padding: 18px 0; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2.6rem, 5vw, 4.8rem);
+      line-height: 0.95;
+      letter-spacing: -2px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff, #b9c6ff, #67e8f9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.75;
+      max-width: 650px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      min-height: 134px;
+    }
+
+    .stat-line {
+      font-size: 1.35rem;
+      line-height: 1.35;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .hero-card {
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(124,58,237,0.55), transparent 65%);
+      filter: blur(10px);
+    }
+
+    .hero-card h3,
+    .section-title h2,
+    .ai-card h3,
+    .email-card h3,
+    .support-card h3,
+    .meal-card h3 {
+      margin-top: 0;
+      font-size: 1.8rem;
+      letter-spacing: -0.6px;
+    }
+
+    .hero-list {
+      display: grid;
+      gap: 14px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .hero-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(6,182,212,0.25));
+      flex-shrink: 0;
+    }
+
+    section { padding: 34px 0; }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.7;
+    }
+
+    .recommendation-panel { padding: 24px; }
+
+    .filters,
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      outline: none;
+      font-size: 0.98rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+      font-family: inherit;
+    }
+
+    .notes-wrap { margin-top: 18px; }
+    .notes-wrap label { margin-bottom: 10px; }
+
+    select option {
+      background: #111827;
+      color: white;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      background: rgba(34,197,94,0.14);
+      color: #b9ffd0;
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+
+    .ai-result-wrap { margin-top: 22px; }
+    .ai-card { padding: 22px; }
+    .ai-card.loading { opacity: 0.8; }
+
+    .ai-content {
+      display: grid;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .ai-section {
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .ai-section-title {
+      display: block;
+      margin-bottom: 10px;
+      color: #dfe6ff;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .ai-section p,
+    .ai-list,
+    .ai-list li {
+      color: var(--muted);
+    }
+
+    .ai-section p {
+      margin: 0;
+      line-height: 1.75;
+    }
+
+    .ai-list {
+      margin: 0;
+      padding-left: 18px;
+      line-height: 1.75;
+    }
+
+    .ai-list li { margin-bottom: 8px; }
+
+    .email-card {
+      margin-top: 22px;
+      padding: 22px;
+    }
+
+    .email-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 0 18px;
+    }
+
+    .email-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .checkbox-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: #7c3aed;
+      flex: 0 0 auto;
+    }
+
+    .checkbox-row label {
+      margin: 0;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .email-status,
+    .meal-status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      display: none;
+    }
+
+    .email-status.show,
+    .meal-status.show { display: block; }
+
+    .email-status.success,
+    .meal-status.success {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: #b9ffd0;
+    }
+
+    .email-status.error,
+    .meal-status.error {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #ffd0d0;
+    }
+
+    .email-status.info,
+    .meal-status.info {
+      background: rgba(6,182,212,0.12);
+      border: 1px solid rgba(6,182,212,0.25);
+      color: #c8f7ff;
+    }
+
+    .helper-text {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .tips-grid,
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .tip-card,
+    .testimonial { padding: 22px; }
+
+    .tip-card h3,
+    .testimonial h3 {
+      margin-top: 14px;
+      margin-bottom: 10px;
+      font-size: 1.15rem;
+    }
+
+    .tip-card p,
+    .testimonial p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .meal-card {
+      padding: 24px;
+    }
+
+    .meal-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .meal-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .upload-box {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .preview-wrap {
+      margin-top: 14px;
+      display: none;
+    }
+
+    .preview-wrap.show { display: block; }
+
+    .preview-wrap img {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.10);
+      display: block;
+    }
+
+    .meal-result {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 220px;
+    }
+
+    .meal-result-empty {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .meal-topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .meal-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+
+    .meal-items {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .meal-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .meal-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #eef2ff;
+    }
+
+    .meal-item span {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.96rem;
+    }
+
+    .meal-summary {
+      margin-top: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .support-card {
+      padding: 24px;
+    }
+
+    .support-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .support-starters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 18px;
+    }
+
+    .starter-chip {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .starter-chip:hover {
+      transform: translateY(-1px);
+      border-color: rgba(103,232,249,0.35);
+    }
+
+    .chat-window {
+      display: grid;
+      gap: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 6px 4px 6px 0;
+      margin-bottom: 16px;
+    }
+
+    .chat-message {
+      max-width: min(85%, 760px);
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chat-message.user {
+      margin-left: auto;
+      background: rgba(124,58,237,0.18);
+      color: #eef2ff;
+      border-color: rgba(124,58,237,0.35);
+    }
+
+    .chat-message.assistant {
+      margin-right: auto;
+      background: rgba(255,255,255,0.05);
+      color: var(--muted);
+    }
+
+    .chat-message.system {
+      margin-right: auto;
+      background: rgba(6,182,212,0.08);
+      color: #c8f7ff;
+      border-color: rgba(6,182,212,0.22);
+    }
+
+    .chat-input-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .chat-input {
+      min-height: 92px;
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .footer {
+      padding: 12px 0 26px;
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .plan-actions .button { padding: 12px 18px; }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .filters,
+      .details-grid,
+      .tips-grid,
+      .testimonials,
+      .email-grid,
+      .meal-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .chat-input-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .stats { grid-template-columns: 1fr; }
+      h1 { line-height: 1.02; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        <div class="brand-badge">⚡</div>
+        <span>DailyMate</span>
+      </div>
+      <div class="nav-links">
+        <a href="#recommendations">AI Plan</a>
+        <a href="#tips">Tips</a>
+        <a href="#stories">Stories</a>
+        <a href="#meal-calculator">Meal calories</a>
+        <a href="#support">Support</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">Personalized AI fitness planning</div>
+        <h1><span class="gradient-text">Train smarter.</span><br />Feel stronger.</h1>
+        <p>
+          DailyMate creates a practical 7-day fitness plan based on your goal, experience,
+          available time, body profile, and personal notes. No generic templates — just one plan built for you.
+        </p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#recommendations">Build my AI plan</a>
+          <a class="button button-secondary" href="#tips">Explore tips</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-line">AI-generated<br />7-day plan</div></div>
+          <div class="stat"><div class="stat-line">Email it to yourself instantly</div></div>
+          <div class="stat"><div class="stat-line">Beginner friendly and realistic</div></div>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>What you’ll get</h3>
+        <ul class="hero-list">
+          <li><div class="icon">🏋️</div><div><strong>Custom weekly training</strong><br />A 7-day structure that matches your goal, level, and available time.</div></li>
+          <li><div class="icon">🥗</div><div><strong>Simple nutrition guidance</strong><br />Practical food advice based on your profile and notes.</div></li>
+          <li><div class="icon">📩</div><div><strong>Email delivery</strong><br />Send your plan straight to your inbox so it is easy to keep and follow.</div></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="recommendations">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="eyebrow">AI-first planner</div>
+            <h2>Build your personalized fitness plan</h2>
+          </div>
+          <p>
+            Fill in your details below and DailyMate will generate a realistic 7-day recommendation with training,
+            nutrition, recovery, and a simple summary of what to focus on this week.
+          </p>
+        </div>
+
+        <div class="glass recommendation-panel">
+          <div class="filters">
+            <div>
+              <label for="goal">Your goal</label>
+              <select id="goal">
+                <option value="all">Any goal</option>
+                <option value="fat-loss">Fat loss</option>
+                <option value="muscle">Muscle gain</option>
+                <option value="strength">Strength</option>
+                <option value="mobility">Mobility</option>
+              </select>
+            </div>
+            <div>
+              <label for="level">Experience level</label>
+              <select id="level">
+                <option value="all">Any level</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div>
+              <label for="place">Training location</label>
+              <select id="place">
+                <option value="all">Anywhere</option>
+                <option value="home">Home</option>
+                <option value="gym">Gym</option>
+              </select>
+            </div>
+            <div>
+              <label for="time">Minutes available</label>
+              <select id="time">
+                <option value="all">Any amount</option>
+                <option value="20">20 mins</option>
+                <option value="30">30 mins</option>
+                <option value="45">45 mins</option>
+                <option value="60">60+ mins</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="details-grid">
+            <div>
+              <label for="ageRange">Age range</label>
+              <select id="ageRange">
+                <option value="unknown">Prefer not to say</option>
+                <option value="18-30">18–30</option>
+                <option value="31-50">31–50</option>
+                <option value="51-70">51–70</option>
+                <option value="70+">70+</option>
+              </select>
+            </div>
+            <div>
+              <label for="sex">Sex</label>
+              <select id="sex">
+                <option value="unknown">Prefer not to say</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div>
+              <label for="heightRange">Height range</label>
+              <select id="heightRange">
+                <option value="unknown">Not specified</option>
+                <option value="150-160">150–160 cm</option>
+                <option value="160-170">160–170 cm</option>
+                <option value="170-180">170–180 cm</option>
+                <option value="180-190">180–190 cm</option>
+                <option value="190+">190+ cm</option>
+              </select>
+            </div>
+            <div>
+              <label for="weightRange">Weight range</label>
+              <select id="weightRange">
+                <option value="unknown">Not specified</option>
+                <option value="40-50">40–50 kg</option>
+                <option value="50-60">50–60 kg</option>
+                <option value="60-70">60–70 kg</option>
+                <option value="70-80">70–80 kg</option>
+                <option value="80-90">80–90 kg</option>
+                <option value="90-100">90–100 kg</option>
+                <option value="100-110">100–110 kg</option>
+                <option value="110-120">110–120 kg</option>
+                <option value="120+">120+ kg</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="notes-wrap">
+            <label for="extraNotes">Additional details</label>
+            <textarea id="extraNotes" placeholder="Add useful context like injuries, equipment at home, allergies, food restrictions, schedule details, exercise preferences, or anything the AI should know."></textarea>
+          </div>
+
+          <div class="hero-actions" style="margin-top: 18px;">
+            <button class="button button-primary" id="applyFilters" type="button">Generate AI plan</button>
+            <button class="button button-secondary" id="resetFilters" type="button">Reset</button>
+          </div>
+
+          <div class="ai-result-wrap" id="aiResult"></div>
+
+          <div class="email-card">
+            <span class="pill" style="display:inline-flex; margin-bottom: 12px;">Email your plan</span>
+            <h3>Keep your plan in your inbox</h3>
+            <p>
+              Enter your email and choose what you want to receive. You can send your generated plan right away,
+              and optionally tick the classic company boxes too.
+            </p>
+
+            <div class="email-grid">
+              <div>
+                <label for="emailName">Your name</label>
+                <input id="emailName" type="text" placeholder="Optional name" />
+              </div>
+              <div>
+                <label for="emailAddress">Your email address</label>
+                <input id="emailAddress" type="email" placeholder="you@example.com" />
+              </div>
+            </div>
+
+            <div class="checkbox-stack">
+              <div class="checkbox-row">
+                <input id="autoSendEmail" type="checkbox" />
+                <label for="autoSendEmail">Send my plan to email automatically after generation</label>
+              </div>
+
+              <div class="checkbox-row">
+                <input id="weeklyIdeasOptIn" type="checkbox" />
+                <label for="weeklyIdeasOptIn">Get weekly fitness ideas and updates by email</label>
+              </div>
+            </div>
+
+            <div class="hero-actions" style="margin-top: 18px;">
+              <button class="button button-secondary" id="sendPlanBtn" type="button">Send current plan now</button>
+            </div>
+
+            <div class="helper-text">
+              The weekly ideas checkbox is saved with the email request, so later you can connect it to a mailing list or newsletter flow.
+            </div>
+
+            <div class="email-status" id="emailStatus"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tips">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="eyebrow">Essentials</div>
+            <h2>Core fitness tips</h2>
+          </div>
+        </div>
+
+        <div class="tips-grid">
+          <article class="tip-card">
+            <div class="icon">📈</div>
+            <h3>Track one clear metric</h3>
+            <p>
+              Do not try to measure everything at once. Pick one main metric that matches your goal,
+              like weekly body weight trend, workout consistency, waist measurement, or total reps completed,
+              and review it once per week instead of obsessing daily.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <div class="icon">🏃</div>
+            <h3>Use walking as a recovery tool</h3>
+            <p>
+              Easy walking is underrated. It helps keep activity levels up, supports recovery between harder sessions,
+              improves routine adherence, and is much easier to sustain than constantly adding more intense cardio.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <div class="icon">🧠</div>
+            <h3>Train below your maximum</h3>
+            <p>
+              Most people progress better when they leave a little in the tank. Not every set needs to be all-out.
+              Stopping one or two reps before complete failure usually improves consistency, technique, and recovery across the week.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <div class="icon">🍽️</div>
+            <h3>Build meals around routine, not hype</h3>
+            <p>
+              The best nutrition plan is the one you can repeat. Focus on regular mealtimes, enough overall food quality,
+              hydration, fruits, vegetables, and sensible portions before worrying about trendy hacks or overcomplicated diet rules.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <div class="icon">🛌</div>
+            <h3>Protect sleep like part of training</h3>
+            <p>
+              Poor sleep makes training feel harder, affects hunger, and can slow recovery. A consistent bedtime,
+              lower late-night screen stimulation, and a cooler darker room often improve performance more than another supplement ever will.
+            </p>
+          </article>
+
+          <article class="tip-card">
+            <div class="icon">🗓️</div>
+            <h3>Make your plan friction-free</h3>
+            <p>
+              Put your training time into your week before motivation disappears. Prepare clothes, water, shoes,
+              and equipment in advance so the workout starts with less resistance. Good systems beat motivation spikes.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="stories">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="eyebrow">Social proof</div>
+            <h2>Success snapshots</h2>
+          </div>
+        </div>
+
+        <div class="testimonials">
+          <article class="testimonial"><h3>“Finally a plan I could stick to.”</h3><p>I stopped overthinking and followed a simple 3-day routine. Within two months I felt stronger and more confident.</p></article>
+          <article class="testimonial"><h3>“Home workouts actually worked.”</h3><p>I only had 20 minutes and a pair of dumbbells. The recommendations helped me stay consistent without needing a full gym.</p></article>
+          <article class="testimonial"><h3>“The guidance felt realistic.”</h3><p>No extreme diet rules and no impossible schedules. Just practical advice that fit my week.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="meal-calculator">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="eyebrow">Meal estimate</div>
+            <h2>Estimated meal calories calculator</h2>
+          </div>
+          <p>
+            Upload a meal photo and DailyMate will estimate visible food parts, approximate calories, and a simple overall healthiness note.
+          </p>
+        </div>
+
+        <div class="meal-card">
+          <span class="pill" style="display:inline-flex; margin-bottom: 12px;">Beta feature</span>
+          <h3>Analyze a food photo</h3>
+          <p>
+            This is an estimate, not an exact nutrition label. The AI tries to split the dish into separate visible parts when possible, such as rice, steak, vegetables, pasta, sauce, or fries.
+          </p>
+
+          <div class="meal-grid">
+            <div class="upload-box">
+              <label for="mealImageInput">Upload meal photo</label>
+              <input id="mealImageInput" type="file" accept="image/png,image/jpeg,image/webp" />
+
+              <div class="hero-actions" style="margin-top: 18px;">
+                <button class="button button-primary" id="analyzeMealBtn" type="button">Estimate meal calories</button>
+                <button class="button button-secondary" id="clearMealBtn" type="button">Clear</button>
+              </div>
+
+              <div class="helper-text">
+                Best results usually come from clear photos with the whole plate visible and decent lighting.
+              </div>
+
+              <div class="preview-wrap" id="mealPreviewWrap">
+                <img id="mealPreviewImage" alt="Meal preview" />
+              </div>
+
+              <div class="meal-status" id="mealStatus"></div>
+            </div>
+
+            <div class="meal-result" id="mealResult">
+              <div class="meal-result-empty">
+                Upload a meal photo to get an estimated food breakdown, approximate calories by item, total estimated calories, and a short healthiness note.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="support">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="eyebrow">Support</div>
+            <h2>Ask DailyMate support</h2>
+          </div>
+          <p>
+            Ask quick questions about your plan, DailyMate features, workout swaps, rest days, training location, or how to use the planner better.
+          </p>
+        </div>
+
+        <div class="support-card">
+          <span class="pill" style="display:inline-flex; margin-bottom: 12px;">FAQ assistant</span>
+          <h3>Need a quick answer?</h3>
+          <p>
+            This assistant is focused on DailyMate support and fitness-plan guidance. It is best for product questions,
+            simple fitness-plan clarifications, and common beginner FAQs.
+          </p>
+
+          <div class="support-starters">
+            <button class="starter-chip" type="button" data-prompt="How should beginners use DailyMate?">How should beginners use DailyMate?</button>
+            <button class="starter-chip" type="button" data-prompt="Can I replace gym exercises with home exercises?">Can I replace gym exercises with home exercises?</button>
+            <button class="starter-chip" type="button" data-prompt="What should I do on rest days?">What should I do on rest days?</button>
+            <button class="starter-chip" type="button" data-prompt="How important is the estimated BMI in the plan?">How important is the estimated BMI in the plan?</button>
+            <button class="starter-chip" type="button" data-prompt="Can I repeat the same plan next week?">Can I repeat the same plan next week?</button>
+            <button class="starter-chip" type="button" data-prompt="What if I only have 20 minutes to train?">What if I only have 20 minutes to train?</button>
+          </div>
+
+          <div class="chat-window" id="supportChatWindow">
+            <div class="chat-message system">
+              Hi — I’m DailyMate support. Ask me about your plan, using the app, adjusting workouts, recovery, rest days, and similar fitness-plan questions.
+            </div>
+          </div>
+
+          <div class="chat-input-wrap">
+            <textarea
+              id="supportChatInput"
+              class="chat-input"
+              placeholder="Ask something like: Can I swap treadmill walking for cycling?"
+            ></textarea>
+            <button class="button button-primary" id="supportSendBtn" type="button">Send question</button>
+          </div>
+
+          <div class="chat-actions">
+            <button class="button button-secondary" id="supportClearBtn" type="button">Clear chat</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    const aiResultEl = document.getElementById('aiResult');
+    const goalEl = document.getElementById('goal');
+    const levelEl = document.getElementById('level');
+    const placeEl = document.getElementById('place');
+    const timeEl = document.getElementById('time');
+    const extraNotesEl = document.getElementById('extraNotes');
+    const ageRangeEl = document.getElementById('ageRange');
+    const sexEl = document.getElementById('sex');
+    const heightRangeEl = document.getElementById('heightRange');
+    const weightRangeEl = document.getElementById('weightRange');
+    const applyBtn = document.getElementById('applyFilters');
+    const resetBtn = document.getElementById('resetFilters');
+
+    const emailNameEl = document.getElementById('emailName');
+    const emailAddressEl = document.getElementById('emailAddress');
+    const autoSendEmailEl = document.getElementById('autoSendEmail');
+    const weeklyIdeasOptInEl = document.getElementById('weeklyIdeasOptIn');
+    const sendPlanBtn = document.getElementById('sendPlanBtn');
+    const emailStatusEl = document.getElementById('emailStatus');
+
+    const mealImageInputEl = document.getElementById('mealImageInput');
+    const analyzeMealBtnEl = document.getElementById('analyzeMealBtn');
+    const clearMealBtnEl = document.getElementById('clearMealBtn');
+    const mealPreviewWrapEl = document.getElementById('mealPreviewWrap');
+    const mealPreviewImageEl = document.getElementById('mealPreviewImage');
+    const mealStatusEl = document.getElementById('mealStatus');
+    const mealResultEl = document.getElementById('mealResult');
+
+    const supportChatWindowEl = document.getElementById('supportChatWindow');
+    const supportChatInputEl = document.getElementById('supportChatInput');
+    const supportSendBtnEl = document.getElementById('supportSendBtn');
+    const supportClearBtnEl = document.getElementById('supportClearBtn');
+    const starterChipEls = document.querySelectorAll('.starter-chip');
+
+    let latestPlanData = null;
+    let latestRawRecommendation = '';
+    let supportChatHistory = [];
+    let currentMealImageBase64 = '';
+
+    function midpointFromRange(range, fallback = null) {
+      if (!range || range === 'unknown') return fallback;
+      if (range.endsWith('+')) {
+        const base = Number(range.replace('+', ''));
+        return Number.isFinite(base) ? base + 5 : fallback;
+      }
+      const parts = range.split('-').map(Number);
+      if (parts.length === 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
+        return (parts[0] + parts[1]) / 2;
+      }
+      return fallback;
+    }
+
+    function calculateEstimatedBMI(heightRange, weightRange) {
+      const heightCm = midpointFromRange(heightRange);
+      const weightKg = midpointFromRange(weightRange);
+      if (!heightCm || !weightKg) return null;
+      const heightM = heightCm / 100;
+      return +(weightKg / (heightM * heightM)).toFixed(1);
+    }
+
+    function safeFileLabel(text) {
+      const map = {
+        'fat-loss': 'Fat loss',
+        'muscle': 'Muscle gain',
+        'strength': 'Strength',
+        'mobility': 'Mobility',
+        'all': 'General fitness'
+      };
+      return map[text] || 'General fitness';
+    }
+
+    function normalizeMultiline(value) {
+      return String(value || '').replace(/\\n/g, '\n').replace(/\r/g, '');
+    }
+
+    function escapeHtml(text) {
+      return (text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function cleanLine(text) {
+      return text.replace(/\*\*/g, '').replace(/^[-*•]\s*/, '').trim();
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim());
+    }
+
+    function showEmailStatus(message, type = 'info') {
+      emailStatusEl.className = `email-status show ${type}`;
+      emailStatusEl.textContent = message;
+    }
+
+    function clearEmailStatus() {
+      emailStatusEl.className = 'email-status';
+      emailStatusEl.textContent = '';
+    }
+
+    function showMealStatus(message, type = 'info') {
+      mealStatusEl.className = `meal-status show ${type}`;
+      mealStatusEl.textContent = message;
+    }
+
+    function clearMealStatus() {
+      mealStatusEl.className = 'meal-status';
+      mealStatusEl.textContent = '';
+    }
+
+    function renderPlanActions() {
+      return `
+        <div class="plan-actions">
+          <button class="button button-primary" id="saveTxtBtn" type="button">Save plan as TXT</button>
+          <button class="button button-secondary" id="savePdfBtn" type="button">Save plan as PDF</button>
+        </div>
+      `;
+    }
+
+    function buildPlanText(planData) {
+      if (!planData) return '';
+      const parts = [
+        'DailyMate — Personalized Fitness Plan',
+        'Goal: ' + planData.goalLabel,
+        '',
+        'Overview',
+        normalizeMultiline(planData.overview),
+        '',
+        '7-Day Plan',
+        ...(planData.weekly.length ? planData.weekly.map(normalizeMultiline) : ['Weekly structure not available.']),
+        '',
+        'Nutrition Guidance',
+        normalizeMultiline(planData.nutrition),
+        '',
+        'Recovery Advice',
+        normalizeMultiline(planData.recovery),
+        '',
+        'Summary',
+        normalizeMultiline(planData.summary)
+      ];
+      return parts.join('\r\n');
+    }
+
+    function downloadTxt() {
+      if (!latestPlanData) return;
+      const blob = new Blob([buildPlanText(latestPlanData)], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `DailyMate-${latestPlanData.goalLabel.replace(/\s+/g, '-')}-plan.txt`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadPdf() {
+      if (!latestPlanData) return;
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('PDF library did not load. Refresh the page and try again.');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const left = 42;
+      const width = pageWidth - 84;
+      let y = 50;
+
+      function paintBackground() {
+        doc.setFillColor(11, 16, 32);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFillColor(70, 35, 150);
+        doc.circle(95, 90, 115, 'F');
+        doc.setFillColor(8, 120, 145);
+        doc.circle(pageWidth - 65, 100, 100, 'F');
+        doc.setFillColor(13, 18, 34);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+      }
+
+      function newPage() {
+        doc.addPage();
+        paintBackground();
+        y = 50;
+      }
+
+      function ensureSpace(linesCount) {
+        const needed = linesCount * 15 + 34;
+        if (y + needed > pageHeight - 40) newPage();
+      }
+
+      function writeHeading(text) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.setTextColor(238, 242, 255);
+        doc.text(text, left, y);
+        y += 26;
+      }
+
+      function writeSection(title, body) {
+        const text = Array.isArray(body) ? body.map(normalizeMultiline).join('\n') : normalizeMultiline(body);
+        const wrapped = doc.splitTextToSize(text || '', width);
+        ensureSpace(wrapped.length + 2);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(223, 230, 255);
+        doc.text(title, left, y);
+        y += 18;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        doc.setTextColor(182, 192, 255);
+        doc.text(wrapped, left, y);
+        y += wrapped.length * 15 + 16;
+      }
+
+      paintBackground();
+      writeHeading(`DailyMate Plan — ${latestPlanData.goalLabel}`);
+      writeSection('Overview', latestPlanData.overview || '');
+      writeSection('7-Day Plan', latestPlanData.weekly || []);
+      writeSection('Nutrition Guidance', latestPlanData.nutrition || '');
+      writeSection('Recovery Advice', latestPlanData.recovery || '');
+      writeSection('Summary', latestPlanData.summary || '');
+      doc.save(`DailyMate-${latestPlanData.goalLabel.replace(/\s+/g, '-')}-plan.pdf`);
+    }
+
+    function attachPlanActionHandlers() {
+      const txtBtn = document.getElementById('saveTxtBtn');
+      const pdfBtn = document.getElementById('savePdfBtn');
+      if (txtBtn) txtBtn.onclick = downloadTxt;
+      if (pdfBtn) pdfBtn.onclick = downloadPdf;
+    }
+
+    function renderSection(title, content) {
+      return `
+        <div class="ai-section">
+          <span class="ai-section-title">${title}</span>
+          ${content}
+        </div>
+      `;
+    }
+
+    function formatText(text) {
+      const cleaned = normalizeMultiline(text || 'No recommendation returned.')
+        .replace(/^Okay User,?/i, '')
+        .replace(/^Your plan\s*/i, '')
+        .replace(/Disclaimer:.*$/gim, '')
+        .replace(/You['’]re already.*$/gim, '')
+        .replace(/Keep pushing.*$/gim, '')
+        .replace(/you['’]ve got this!?/gim, '')
+        .trim();
+
+      const lines = cleaned
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(cleanLine)
+        .filter(Boolean);
+
+      let overview = '';
+      let weekly = [];
+      let recovery = '';
+      let nutrition = '';
+      let summary = '';
+      let currentSection = '';
+
+      function detectSection(line) {
+        const normalized = line.toLowerCase().replace(/:$/, '').trim();
+        if (normalized === 'overview') return 'overview';
+        if (normalized === '7-day plan') return 'weekly';
+        if (normalized === 'nutrition guidance' || normalized === 'nutrition') return 'nutrition';
+        if (normalized === 'recovery advice' || normalized === 'recovery tip') return 'recovery';
+        if (normalized === 'summary') return 'summary';
+        return '';
+      }
+
+      for (const line of lines) {
+        const detected = detectSection(line);
+        if (detected) {
+          currentSection = detected;
+          continue;
+        }
+
+        if (/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i.test(line)) {
+          weekly.push(line);
+          currentSection = 'weekly';
+          continue;
+        }
+
+        if (/^weekly workout suggestion:?$/i.test(line)) {
+          currentSection = 'weekly';
+          continue;
+        }
+
+        if (currentSection === 'overview') {
+          overview = overview ? overview + ' ' + line : line;
+          continue;
+        }
+
+        if (currentSection === 'nutrition') {
+          nutrition = nutrition ? nutrition + ' ' + line : line;
+          continue;
+        }
+
+        if (currentSection === 'recovery') {
+          recovery = recovery ? recovery + ' ' + line : line;
+          continue;
+        }
+
+        if (currentSection === 'summary') {
+          summary = summary ? summary + ' ' + line : line;
+          continue;
+        }
+
+        const lower = line.toLowerCase();
+
+        if (
+          lower.includes('meal') ||
+          lower.includes('hydration') ||
+          lower.includes('carbohydrate') ||
+          lower.includes('foods') ||
+          lower.includes('calories') ||
+          lower.includes('vegetable') ||
+          lower.includes('fruit')
+        ) {
+          nutrition = nutrition ? nutrition + ' ' + line : line;
+          continue;
+        }
+
+        if (
+          lower.includes('sleep') ||
+          lower.includes('rest day') ||
+          lower.includes('soreness') ||
+          lower.includes('recovery')
+        ) {
+          recovery = recovery ? recovery + ' ' + line : line;
+          continue;
+        }
+
+        if (!overview) {
+          overview = line;
+        } else if (!summary) {
+          summary = line;
+        }
+      }
+
+      if (!overview) {
+        overview = 'A balanced weekly plan focused on consistency, practical training, and steady progress toward your selected goal.';
+      }
+
+      if (!nutrition) {
+        nutrition = 'Keep meals regular, stay hydrated, include a variety of whole foods, and match portion sizes to your goal and activity level.';
+      }
+
+      if (!recovery) {
+        recovery = 'Aim for consistent sleep, include at least one lower-intensity day, and avoid turning every workout into a maximal effort.';
+      }
+
+      if (!summary || /^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/i.test(summary)) {
+        summary = 'A practical 7-day routine that combines structured training, simple nutrition habits, and realistic recovery support.';
+      }
+
+      latestPlanData = {
+        goalLabel: safeFileLabel(goalEl.value),
+        overview,
+        weekly,
+        nutrition,
+        recovery,
+        summary
+      };
+
+      const sections = [];
+      sections.push(renderSection('Overview', '<p>' + escapeHtml(overview) + '</p>'));
+
+      if (weekly.length) {
+        sections.push(renderSection(
+          '7-Day Plan',
+          '<ul class="ai-list">' + weekly.map(item => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>'
+        ));
+      } else {
+        sections.push(renderSection(
+          '7-Day Plan',
+          '<p>No detailed day-by-day structure was returned, but the summary and guidance below still reflect your plan.</p>'
+        ));
+      }
+
+      sections.push(renderSection('Nutrition Guidance', '<p>' + escapeHtml(nutrition) + '</p>'));
+      sections.push(renderSection('Recovery Advice', '<p>' + escapeHtml(recovery) + '</p>'));
+      sections.push(renderSection('Summary', '<p>' + escapeHtml(summary) + '</p>'));
+      sections.push(renderPlanActions());
+
+      return sections.join('');
+    }
+
+    function buildSupportContext() {
+      return {
+        goal: goalEl.value,
+        level: levelEl.value,
+        training_location: placeEl.value,
+        workout_time: timeEl.value,
+        age_range: ageRangeEl.value,
+        sex: sexEl.value,
+        height_range: heightRangeEl.value,
+        weight_range: weightRangeEl.value,
+        extra_notes: extraNotesEl.value.trim(),
+        estimated_bmi: calculateEstimatedBMI(heightRangeEl.value, weightRangeEl.value),
+        latest_plan: latestPlanData
+      };
+    }
+
+    function addChatMessage(role, text) {
+      const messageEl = document.createElement('div');
+      messageEl.className = `chat-message ${role}`;
+      messageEl.textContent = text;
+      supportChatWindowEl.appendChild(messageEl);
+      supportChatWindowEl.scrollTop = supportChatWindowEl.scrollHeight;
+    }
+
+    function resetSupportChat() {
+      supportChatHistory = [];
+      supportChatWindowEl.innerHTML = `
+        <div class="chat-message system">
+          Hi — I’m DailyMate support. Ask me about your plan, using the app, adjusting workouts, recovery, rest days, and similar fitness-plan questions.
+        </div>
+      `;
+    }
+
+    async function sendSupportQuestion(prefilledQuestion = '') {
+      const question = (prefilledQuestion || supportChatInputEl.value || '').trim();
+
+      if (!question) return;
+
+      addChatMessage('user', question);
+      supportChatHistory.push({ role: 'user', content: question });
+      supportChatInputEl.value = '';
+
+      supportSendBtnEl.disabled = true;
+      addChatMessage('assistant', 'Thinking...');
+
+      try {
+        const response = await fetch('/support-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: question,
+            history: supportChatHistory,
+            context: buildSupportContext()
+          })
+        });
+
+        const data = await response.json();
+
+        if (supportChatWindowEl.lastElementChild) {
+          supportChatWindowEl.removeChild(supportChatWindowEl.lastElementChild);
+        }
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Support assistant could not respond.');
+        }
+
+        const answer = data.reply || 'Sorry, I could not generate a support answer right now.';
+        addChatMessage('assistant', answer);
+        supportChatHistory.push({ role: 'assistant', content: answer });
+      } catch (error) {
+        if (
+          supportChatWindowEl.lastElementChild &&
+          supportChatWindowEl.lastElementChild.classList.contains('assistant') &&
+          supportChatWindowEl.lastElementChild.textContent === 'Thinking...'
+        ) {
+          supportChatWindowEl.removeChild(supportChatWindowEl.lastElementChild);
+        }
+        addChatMessage('system', error.message || 'Support assistant could not respond.');
+      } finally {
+        supportSendBtnEl.disabled = false;
+        supportChatInputEl.focus();
+      }
+    }
+
+    function mealHealthLabelText(label) {
+      const normalized = String(label || '').toLowerCase().trim();
+      if (normalized === 'generally healthy') return 'Generally healthy';
+      if (normalized === 'moderately healthy') return 'Moderately healthy';
+      if (normalized === 'occasional / heavier choice') return 'Occasional / heavier choice';
+      return label || 'Estimated healthiness';
+    }
+
+    function renderMealResult(data) {
+      const items = Array.isArray(data.items) ? data.items : [];
+      const totalCalories = data.total_estimated_calories ?? 'Unknown';
+      const healthLabel = mealHealthLabelText(data.healthiness_label);
+      const summary = data.summary || 'No summary returned.';
+
+      mealResultEl.innerHTML = `
+        <div class="meal-topline">
+          <div class="meal-badge">Estimated total: ${escapeHtml(String(totalCalories))} kcal</div>
+          <div class="meal-badge">${escapeHtml(healthLabel)}</div>
+        </div>
+
+        <div class="meal-items">
+          ${
+            items.length
+              ? items.map(item => `
+                <div class="meal-item">
+                  <strong>${escapeHtml(item.name || 'Food item')}</strong>
+                  <span>
+                    Estimated calories: ${escapeHtml(String(item.estimated_calories ?? 'Unknown'))} kcal
+                    ${item.note ? ' — ' + escapeHtml(item.note) : ''}
+                  </span>
+                </div>
+              `).join('')
+              : `
+                <div class="meal-item">
+                  <strong>No separate items found</strong>
+                  <span>The model could not confidently split the meal into clear visible parts.</span>
+                </div>
+              `
+          }
+        </div>
+
+        <div class="meal-summary">${escapeHtml(summary)}</div>
+      `;
+    }
+
+    function clearMealCalculator() {
+      currentMealImageBase64 = '';
+      mealImageInputEl.value = '';
+      mealPreviewImageEl.src = '';
+      mealPreviewWrapEl.classList.remove('show');
+      clearMealStatus();
+      mealResultEl.innerHTML = `
+        <div class="meal-result-empty">
+          Upload a meal photo to get an estimated food breakdown, approximate calories by item, total estimated calories, and a short healthiness note.
+        </div>
+      `;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || '');
+          const base64 = result.includes(',') ? result.split(',')[1] : result;
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function analyzeMealImage() {
+      if (!currentMealImageBase64) {
+        showMealStatus('Upload a meal photo first.', 'error');
+        return;
+      }
+
+      analyzeMealBtnEl.disabled = true;
+      showMealStatus('Analyzing meal photo...', 'info');
+      mealResultEl.innerHTML = `
+        <div class="meal-result-empty">
+          DailyMate is estimating visible meal parts and approximate calories...
+        </div>
+      `;
+
+      try {
+        const response = await fetch('/analyze-meal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image_base64: currentMealImageBase64
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Could not analyze meal image.');
+        }
+
+        renderMealResult(data);
+        showMealStatus('Meal estimate ready.', 'success');
+      } catch (error) {
+        showMealStatus(error.message || 'Could not analyze meal image.', 'error');
+        mealResultEl.innerHTML = `
+          <div class="meal-result-empty">
+            Meal analysis could not be completed right now.
+          </div>
+        `;
+      } finally {
+        analyzeMealBtnEl.disabled = false;
+      }
+    }
+
+    async function sendCurrentPlanEmail() {
+      if (!latestPlanData) {
+        showEmailStatus('Generate a plan first, then you can send it by email.', 'error');
+        return false;
+      }
+
+      const email = emailAddressEl.value.trim();
+      const name = emailNameEl.value.trim();
+
+      if (!isValidEmail(email)) {
+        showEmailStatus('Enter a valid email address before sending your plan.', 'error');
+        return false;
+      }
+
+      const payload = {
+        email,
+        name,
+        goal: latestPlanData.goalLabel,
+        plan_text: buildPlanText(latestPlanData),
+        weekly_ideas_opt_in: weeklyIdeasOptInEl.checked
+      };
+
+      sendPlanBtn.disabled = true;
+      showEmailStatus('Sending your plan...', 'info');
+
+      try {
+        const response = await fetch('/send-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Could not send email.');
+        }
+
+        showEmailStatus(data.message || 'Plan sent successfully.', 'success');
+        return true;
+      } catch (error) {
+        showEmailStatus(error.message || 'Could not send email.', 'error');
+        return false;
+      } finally {
+        sendPlanBtn.disabled = false;
+      }
+    }
+
+    async function getAIRecommendation() {
+      clearEmailStatus();
+
+      aiResultEl.innerHTML = `
+        <div class="ai-card loading">
+          <span class="pill">AI is thinking</span>
+          <h3>Generating recommendation...</h3>
+          <p>Your local model is building a personalized 7-day plan based on your inputs.</p>
+        </div>
+      `;
+
+      const estimatedBMI = calculateEstimatedBMI(heightRangeEl.value, weightRangeEl.value);
+
+      const payload = {
+        name: emailNameEl.value.trim() || 'User',
+        age: ageRangeEl.value,
+        goal: goalEl.value,
+        level: levelEl.value,
+        training_location: placeEl.value,
+        days_per_week: 7,
+        workout_time: timeEl.value === 'all' ? 30 : Number(timeEl.value),
+        injuries: 'none',
+        extra_notes: extraNotesEl.value.trim(),
+        sex: sexEl.value,
+        height_range: heightRangeEl.value,
+        weight_range: weightRangeEl.value,
+        estimated_bmi: estimatedBMI
+      };
+
+      applyBtn.disabled = true;
+
+      try {
+        const res = await fetch('/recommend', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Unknown server error');
+
+        latestRawRecommendation = data.recommendation || '';
+
+        aiResultEl.innerHTML = `
+          <div class="ai-card">
+            <span class="pill">AI recommendation</span>
+            <h3>Your personalized 7-day plan</h3>
+            <div class="ai-content">${formatText(latestRawRecommendation)}</div>
+          </div>
+        `;
+
+        attachPlanActionHandlers();
+
+        if (autoSendEmailEl.checked) {
+          if (!isValidEmail(emailAddressEl.value.trim())) {
+            showEmailStatus('Your plan is ready, but auto-send was skipped because the email address is missing or invalid.', 'error');
+          } else {
+            await sendCurrentPlanEmail();
+          }
+        }
+      } catch (err) {
+        aiResultEl.innerHTML = `
+          <div class="ai-card">
+            <span class="pill">Error</span>
+            <h3>Could not reach local AI</h3>
+            <p>${escapeHtml(err.message)}</p>
+          </div>
+        `;
+      } finally {
+        applyBtn.disabled = false;
+      }
+    }
+
+    mealImageInputEl.addEventListener('change', async () => {
+      clearMealStatus();
+
+      const file = mealImageInputEl.files && mealImageInputEl.files[0];
+      if (!file) {
+        clearMealCalculator();
+        return;
+      }
+
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showMealStatus('Please upload a JPG, PNG, or WEBP image.', 'error');
+        clearMealCalculator();
+        return;
+      }
+
+      try {
+        currentMealImageBase64 = await fileToBase64(file);
+        mealPreviewImageEl.src = URL.createObjectURL(file);
+        mealPreviewWrapEl.classList.add('show');
+        mealResultEl.innerHTML = `
+          <div class="meal-result-empty">
+            Image ready. Click “Estimate meal calories” to analyze the meal.
+          </div>
+        `;
+      } catch (error) {
+        showMealStatus('Could not read the uploaded image.', 'error');
+        clearMealCalculator();
+      }
+    });
+
+    analyzeMealBtnEl.addEventListener('click', async () => {
+      await analyzeMealImage();
+    });
+
+    clearMealBtnEl.addEventListener('click', () => {
+      clearMealCalculator();
+    });
+
+    applyBtn.addEventListener('click', async () => {
+      await getAIRecommendation();
+    });
+
+    sendPlanBtn.addEventListener('click', async () => {
+      await sendCurrentPlanEmail();
+    });
+
+    supportSendBtnEl.addEventListener('click', async () => {
+      await sendSupportQuestion();
+    });
+
+    supportClearBtnEl.addEventListener('click', () => {
+      resetSupportChat();
+    });
+
+    supportChatInputEl.addEventListener('keydown', async (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        await sendSupportQuestion();
+      }
+    });
+
+    starterChipEls.forEach(chip => {
+      chip.addEventListener('click', async () => {
+        const prompt = chip.getAttribute('data-prompt') || '';
+        await sendSupportQuestion(prompt);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      goalEl.value = 'all';
+      levelEl.value = 'all';
+      placeEl.value = 'all';
+      timeEl.value = 'all';
+      extraNotesEl.value = '';
+      ageRangeEl.value = 'unknown';
+      sexEl.value = 'unknown';
+      heightRangeEl.value = 'unknown';
+      weightRangeEl.value = 'unknown';
+      emailNameEl.value = '';
+      emailAddressEl.value = '';
+      autoSendEmailEl.checked = false;
+      weeklyIdeasOptInEl.checked = false;
+      latestPlanData = null;
+      latestRawRecommendation = '';
+      aiResultEl.innerHTML = '';
+      clearEmailStatus();
+      clearMealCalculator();
+      resetSupportChat();
+    });
+
+    clearMealCalculator();
+    resetSupportChat();
+  </script>
+</body>
+</html>
